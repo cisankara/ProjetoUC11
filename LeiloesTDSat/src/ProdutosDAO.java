@@ -120,4 +120,29 @@ public class ProdutosDAO {
         return produtosVendidos;
     }
 
+    public void venderProduto(int idProduto) {
+        conn = new conectaDAO().connectDB();
+
+        try {
+            String sql = "UPDATE produtos SET status = 'Vendido' WHERE id = ?";
+            prep = conn.prepareStatement(sql);
+            prep.setInt(1, idProduto);
+            prep.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Produto vendido com sucesso!");
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Erro ao vender produto: " + e.getMessage());
+        } finally {
+            // Fechar recursos
+            try {
+                if (prep != null) {
+                    prep.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(null, "Erro ao fechar recursos: " + ex.getMessage());
+            }
+        }
+    }
 }
