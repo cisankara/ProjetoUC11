@@ -11,12 +11,11 @@ public class ProdutosDAO {
     Connection conn;
     PreparedStatement prep;
     ResultSet resultset;
-    ArrayList<ProdutosDTO> listagem = new ArrayList<>();
 
     public void cadastrarProduto(ProdutosDTO produto) {
 
         conn = new conectaDAO().connectDB();
-        
+
         try {
             String sql = "INSERT INTO produtos (nome, valor, status) VALUES (?, ?, ?)";
             prep = conn.prepareStatement(sql);
@@ -30,18 +29,55 @@ public class ProdutosDAO {
         } finally {
             // Fechar recursos
             try {
-                if (prep != null) prep.close();
-                if (conn != null) conn.close();
+                if (prep != null) {
+                    prep.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(null, "Erro ao fechar recursos: " + ex.getMessage());
             }
         }
-    
+
     }
 
     public ArrayList<ProdutosDTO> listarProdutos() {
+        ArrayList<ProdutosDTO> listagem = new ArrayList<>();
+
+        try {
+            conn = new conectaDAO().connectDB();
+            String sql = "SELECT * FROM produtos";
+            prep = conn.prepareStatement(sql);
+            resultset = prep.executeQuery();
+
+            while (resultset.next()) {
+                ProdutosDTO produto = new ProdutosDTO();
+                produto.setId(resultset.getInt("id"));
+                produto.setNome(resultset.getString("nome"));
+                produto.setValor(resultset.getInt("valor"));
+                produto.setStatus(resultset.getString("status"));
+                listagem.add(produto);
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Erro ao listar produtos: " + e.getMessage());
+        } finally {
+
+            try {
+                if (resultset != null) {
+                    resultset.close();
+                }
+                if (prep != null) {
+                    prep.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(null, "Erro ao fechar recursos: " + ex.getMessage());
+            }
+        }
 
         return listagem;
     }
-
 }
